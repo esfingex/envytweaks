@@ -17,7 +17,9 @@ class TopBarView extends PanelMenu.Button {
         super._init(0);
         this._all_settings = extensionObject.getSettings();
         this._extension_path = extensionObject.path;
+        this._extension = extensionObject;
     }
+
 
     enable() {
         this.activeProfile = Utility.getCurrentProfile();
@@ -32,17 +34,19 @@ class TopBarView extends PanelMenu.Button {
             icon_size: ICON_SIZE
         });
 
-        this.integrated_menu_item = new PopupMenu.PopupMenuItem('Integrated');
+        const _ = this._extension.gettext.bind(this._extension);
+
+        this.integrated_menu_item = new PopupMenu.PopupMenuItem(_('Integrated'));
         this.integrated_menu_item_id = this.integrated_menu_item.connect('activate', () => {
             this._switchProfile('integrated');
         });
 
-        this.hybrid_menu_item = new PopupMenu.PopupMenuItem('Hybrid');
+        this.hybrid_menu_item = new PopupMenu.PopupMenuItem(_('Hybrid'));
         this.hybrid_menu_item_id = this.hybrid_menu_item.connect('activate', () => {
             this._switchProfile('hybrid');
         });
 
-        this.nvidia_menu_item = new PopupMenu.PopupMenuItem('Nvidia');
+        this.nvidia_menu_item = new PopupMenu.PopupMenuItem(_('Nvidia'));
         this.nvidia_menu_item_id = this.nvidia_menu_item.connect('activate', () => {
             this._switchProfile('nvidia');
         });
@@ -58,10 +62,11 @@ class TopBarView extends PanelMenu.Button {
             this.hybrid_menu_item.sensitive = false;
             this.nvidia_menu_item.sensitive = false;
             
-            let warningItem = new PopupMenu.PopupMenuItem('envytweaks is not installed!');
+            let warningItem = new PopupMenu.PopupMenuItem(_('envytweaks is not installed!'));
             warningItem.sensitive = false;
             this.menu.addMenuItem(warningItem, 0);
         }
+
 
         this._updateTopBarIcon();
     }
@@ -139,8 +144,10 @@ class TopBarView extends PanelMenu.Button {
 
         // Update the restart required item in menu
         if (this.restartPending) {
+            const _ = this._extension.gettext.bind(this._extension);
             if (!this.restart_menu_item) {
-                this.restart_menu_item = new PopupMenu.PopupMenuItem('Restart Required*');
+                this.restart_menu_item = new PopupMenu.PopupMenuItem(_('Restart Required*'));
+
                 this.restart_menu_item_id = this.restart_menu_item.connect('activate', () => {
                     Utility.requestReboot();
                 });

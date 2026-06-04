@@ -8,6 +8,9 @@ import * as Utility from '../lib/Utility.js';
 export const QuickSettingsToggle = GObject.registerClass(
 class QuickSettingsToggle extends QuickSettings.QuickMenuToggle {  
     _init(extensionObject) {
+        this._extension = extensionObject;
+        const _ = this._extension.gettext.bind(this._extension);
+        
         this.activeProfile = Utility.getCurrentProfile(); // initialized profile since startup
         
         if (this.activeProfile === Utility.GPU_PROFILE_NOT_INSTALLED) {
@@ -22,47 +25,47 @@ class QuickSettingsToggle extends QuickSettings.QuickMenuToggle {
         this.doNotSwitch = false;
         
         super._init({
-            title: 'GPU Profile',
-            subtitle: this.chosenProfile === 'not_installed' ? 'Not Installed' : Utility.capitalizeFirstLetter(this.chosenProfile),
+            title: _('GPU Profile'),
+            subtitle: this.chosenProfile === 'not_installed' ? _('Not Installed') : Utility.capitalizeFirstLetter(this.chosenProfile),
             iconName: 'power-profile-performance-symbolic',
             toggleMode: false, // disable the possibility to click the button
             checked: this.activeProfile === 'hybrid' || this.activeProfile === 'nvidia',
         });
-        this._all_settings = extensionObject.getSettings();
+        this._all_settings = this._extension.getSettings();
 
         // This function is unique to this class. It adds a nice header with an icon, title and optional subtitle.
         if (this.activeProfile === Utility.GPU_PROFILE_NOT_INSTALLED) {
-            this.menu.setHeader('dialog-warning-symbolic', super.title, 'envytweaks is not installed!');
+            this.menu.setHeader('dialog-warning-symbolic', super.title, _('envytweaks is not installed!'));
         } else {
-            this.menu.setHeader('power-profile-performance-symbolic', super.title, 'Choose a GPU mode');
+            this.menu.setHeader('power-profile-performance-symbolic', super.title, _('Choose a GPU mode'));
         }
 
         // add a sections of items to the menu
         this._itemsSection = new PopupMenu.PopupMenuSection();
         
-        this._integratedAction = this._itemsSection.addAction('Integrated' + (this.activeProfile === 'integrated' ? ' (Active)' : ''), () => {
+        this._integratedAction = this._itemsSection.addAction(_('Integrated') + (this.activeProfile === 'integrated' ? _(' (Active)') : ''), () => {
             if (this.chosenProfile !== 'integrated' && !this.doNotSwitch) {
                 this.doNotSwitch = true;
-                super.subtitle = 'Switching...';
-                this.menu.setHeader('power-profile-performance-symbolic', super.title, 'Switching to Integrated mode...');
+                super.subtitle = _('Switching...');
+                this.menu.setHeader('power-profile-performance-symbolic', super.title, _('Switching to Integrated mode...'));
                 Utility.switchIntegrated(this._onSwitchComplete.bind(this));
             }
         });
         
-        this._hybridAction = this._itemsSection.addAction('Hybrid' + (this.activeProfile === 'hybrid' ? ' (Active)' : ''), () => {
+        this._hybridAction = this._itemsSection.addAction(_('Hybrid') + (this.activeProfile === 'hybrid' ? _(' (Active)') : ''), () => {
             if (this.chosenProfile !== 'hybrid' && !this.doNotSwitch) {
                 this.doNotSwitch = true;
-                super.subtitle = 'Switching...';
-                this.menu.setHeader('power-profile-performance-symbolic', super.title, 'Switching to Hybrid mode...');
+                super.subtitle = _('Switching...');
+                this.menu.setHeader('power-profile-performance-symbolic', super.title, _('Switching to Hybrid mode...'));
                 Utility.switchHybrid(this._all_settings, this._onSwitchComplete.bind(this));
             }
         });
         
-        this._nvidiaAction = this._itemsSection.addAction('Nvidia'+ (this.activeProfile === 'nvidia' ? ' (Active)' : ''), () => {
+        this._nvidiaAction = this._itemsSection.addAction(_('Nvidia') + (this.activeProfile === 'nvidia' ? _(' (Active)') : ''), () => {
             if (this.chosenProfile !== 'nvidia' && !this.doNotSwitch) {
                 this.doNotSwitch = true;
-                super.subtitle = 'Switching...';
-                this.menu.setHeader('power-profile-performance-symbolic', super.title, 'Switching to Nvidia mode...');
+                super.subtitle = _('Switching...');
+                this.menu.setHeader('power-profile-performance-symbolic', super.title, _('Switching to Nvidia mode...'));
                 Utility.switchNvidia(this._all_settings, this._onSwitchComplete.bind(this));
             }
         });
@@ -78,26 +81,27 @@ class QuickSettingsToggle extends QuickSettings.QuickMenuToggle {
         // Add an entry-point for more settings
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         const settingsItem = this.menu.addAction(
-            'More Settings',
-            () => extensionObject.openPreferences()
+            _('More Settings'),
+            () => this._extension.openPreferences()
         );
 
         // Ensure the settings are unavailable when the screen is locked
         settingsItem.visible = Main.sessionMode.allowSettings;
-        this.menu._settingsActions[extensionObject.uuid] = settingsItem;
+        this.menu._settingsActions[this._extension.uuid] = settingsItem;
     }
 
     _onSwitchComplete(exitStatus) {
+        const _ = this._extension.gettext.bind(this._extension);
         if (exitStatus === 126) {
             // User cancelled authorization
             this.chosenProfile = Utility.getCurrentProfile();
             if (this.restartPending) {
                 super.subtitle = Utility.capitalizeFirstLetter(this.chosenProfile) + '*';
                 this.menu.setHeader('power-profile-performance-symbolic', super.title, 
-                    'Restart to apply ' + Utility.capitalizeFirstLetter(this.chosenProfile) + ' mode');
+                    _('Restart to apply %s mode').replace('%s', Utility.capitalizeFirstLetter(this.chosenProfile)));
             } else {
                 super.subtitle = Utility.capitalizeFirstLetter(this.chosenProfile);
-                this.menu.setHeader('power-profile-performance-symbolic', super.title, 'Choose a GPU mode');
+                this.menu.setHeader('power-profile-performance-symbolic', super.title, _('Choose a GPU mode'));
             }
             this.doNotSwitch = false;
             return;
@@ -106,8 +110,8 @@ class QuickSettingsToggle extends QuickSettings.QuickMenuToggle {
         if (exitStatus !== 0) {
             // Error occurred
             this.chosenProfile = Utility.getCurrentProfile();
-            super.subtitle = 'Error';
-            this.menu.setHeader('dialog-warning-symbolic', super.title, 'Switching failed (code ' + exitStatus + ')');
+            super.subtitle = _('Error');
+            this.menu.setHeader('dialog-warning-symbolic', super.title, _('Switching failed (code %s)').replace('%s', exitStatus));
             this.doNotSwitch = false;
             return;
         }
@@ -118,18 +122,19 @@ class QuickSettingsToggle extends QuickSettings.QuickMenuToggle {
 
         if (this.activeProfile === this.chosenProfile) {
             super.subtitle = Utility.capitalizeFirstLetter(this.activeProfile);
-            this.menu.setHeader('power-profile-performance-symbolic', super.title, 'Choose a GPU mode');
+            this.menu.setHeader('power-profile-performance-symbolic', super.title, _('Choose a GPU mode'));
             this.restartPending = false;
         } else {
             super.subtitle = Utility.capitalizeFirstLetter(this.chosenProfile) + '*';
             this.menu.setHeader('power-profile-performance-symbolic', super.title, 
-                'Restart to apply ' + Utility.capitalizeFirstLetter(this.chosenProfile) + ' mode');
+                _('Restart to apply %s mode').replace('%s', Utility.capitalizeFirstLetter(this.chosenProfile)));
             Utility.requestReboot();
             this.restartPending = true;
         }
         
         this.doNotSwitch = false;
     }
+
 });
 
 export const QuickSettingsIndicator = GObject.registerClass(

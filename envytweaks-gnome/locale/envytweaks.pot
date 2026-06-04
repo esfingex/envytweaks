@@ -1,0 +1,177 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-04 02:34-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: envytweaks-gnome/prefs.js:12
+msgid "General"
+msgstr ""
+
+#: envytweaks-gnome/prefs.js:17
+msgid "Settings"
+msgstr ""
+
+#: envytweaks-gnome/prefs.js:18
+msgid "Adjust extension and GPU profile switching options"
+msgstr ""
+
+#: envytweaks-gnome/prefs.js:22
+msgid "RTD3"
+msgstr ""
+
+#: envytweaks-gnome/prefs.js:23
+msgid ""
+"Enable PCI-Express Runtime D3 (RTD3) Power Management on Hybrid mode. When "
+"not disabled, RTD3 allows the dGPU to be dynamically turned off when not in "
+"use"
+msgstr ""
+
+#: envytweaks-gnome/prefs.js:27
+msgid "RTD3 Power Management Mode"
+msgstr ""
+
+#: envytweaks-gnome/prefs.js:28
+msgid ""
+"Select the level of PCI-Express Runtime D3 Power Management (default is "
+"Coarse-Grained)"
+msgstr ""
+
+#: envytweaks-gnome/prefs.js:30
+msgid "0: Disabled"
+msgstr ""
+
+#: envytweaks-gnome/prefs.js:31
+msgid "1: Fine-Grained"
+msgstr ""
+
+#: envytweaks-gnome/prefs.js:32
+msgid "2: Coarse-Grained (Default)"
+msgstr ""
+
+#: envytweaks-gnome/prefs.js:33
+msgid "3: Aggressive"
+msgstr ""
+
+#: envytweaks-gnome/prefs.js:38
+msgid "Force Composition Pipeline"
+msgstr ""
+
+#: envytweaks-gnome/prefs.js:39
+msgid ""
+"Enable ForceCompositionPipeline on Nvidia mode. Use this option if facing "
+"screen tearing"
+msgstr ""
+
+#: envytweaks-gnome/prefs.js:43
+msgid "Coolbits"
+msgstr ""
+
+#: envytweaks-gnome/prefs.js:44
+msgid ""
+"Enable Coolbits, which allows overclocking on Nvidia mode (not recommended)"
+msgstr ""
+
+#: envytweaks-gnome/prefs.js:48
+msgid "Force Topbar View"
+msgstr ""
+
+#: envytweaks-gnome/prefs.js:49
+msgid ""
+"Show the GPU profile selector directly in the panel/topbar instead of the "
+"Quick Settings menu"
+msgstr ""
+
+#: envytweaks-gnome/ui/QuickSettingsView.js:28
+msgid "GPU Profile"
+msgstr ""
+
+#: envytweaks-gnome/ui/QuickSettingsView.js:29
+msgid "Not Installed"
+msgstr ""
+
+#: envytweaks-gnome/ui/QuickSettingsView.js:38
+#: envytweaks-gnome/ui/TopBarView.js:65
+msgid "envytweaks is not installed!"
+msgstr ""
+
+#: envytweaks-gnome/ui/QuickSettingsView.js:40
+#: envytweaks-gnome/ui/QuickSettingsView.js:104
+#: envytweaks-gnome/ui/QuickSettingsView.js:125
+msgid "Choose a GPU mode"
+msgstr ""
+
+#: envytweaks-gnome/ui/QuickSettingsView.js:46
+#: envytweaks-gnome/ui/TopBarView.js:39
+msgid "Integrated"
+msgstr ""
+
+#: envytweaks-gnome/ui/QuickSettingsView.js:46
+#: envytweaks-gnome/ui/QuickSettingsView.js:55
+#: envytweaks-gnome/ui/QuickSettingsView.js:64
+msgid " (Active)"
+msgstr ""
+
+#: envytweaks-gnome/ui/QuickSettingsView.js:49
+#: envytweaks-gnome/ui/QuickSettingsView.js:58
+#: envytweaks-gnome/ui/QuickSettingsView.js:67
+msgid "Switching..."
+msgstr ""
+
+#: envytweaks-gnome/ui/QuickSettingsView.js:50
+msgid "Switching to Integrated mode..."
+msgstr ""
+
+#: envytweaks-gnome/ui/QuickSettingsView.js:55
+#: envytweaks-gnome/ui/TopBarView.js:44
+msgid "Hybrid"
+msgstr ""
+
+#: envytweaks-gnome/ui/QuickSettingsView.js:59
+msgid "Switching to Hybrid mode..."
+msgstr ""
+
+#: envytweaks-gnome/ui/QuickSettingsView.js:64
+#: envytweaks-gnome/ui/TopBarView.js:49
+msgid "Nvidia"
+msgstr ""
+
+#: envytweaks-gnome/ui/QuickSettingsView.js:68
+msgid "Switching to Nvidia mode..."
+msgstr ""
+
+#: envytweaks-gnome/ui/QuickSettingsView.js:84
+msgid "More Settings"
+msgstr ""
+
+#: envytweaks-gnome/ui/QuickSettingsView.js:101
+#: envytweaks-gnome/ui/QuickSettingsView.js:130
+#, javascript-format
+msgid "Restart to apply %s mode"
+msgstr ""
+
+#: envytweaks-gnome/ui/QuickSettingsView.js:113
+msgid "Error"
+msgstr ""
+
+#: envytweaks-gnome/ui/QuickSettingsView.js:114
+#, javascript-format
+msgid "Switching failed (code %s)"
+msgstr ""
+
+#: envytweaks-gnome/ui/TopBarView.js:149
+msgid "Restart Required*"
+msgstr ""

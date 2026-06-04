@@ -1,4 +1,3 @@
-# TODO
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
@@ -9,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-19 20:28+0200\n"
+"POT-Creation-Date: 2026-06-04 02:12-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,14 +17,68 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: contents/ui/configGeneral.qml
-msgid ""
+#: envytweaks-kde/contents/ui/configGeneral.qml:18
+msgid "EnvyTweaks query command:"
 msgstr ""
 
-#: contents/ui/main.qml
-msgid ""
+#: envytweaks-kde/contents/ui/configGeneral.qml:23
+msgid "EnvyTweaks set mode command:"
 msgstr ""
 
-#: contents/config/config.qml
-msgid ""
+#: envytweaks-kde/contents/ui/configGeneral.qml:29
+msgid "Hybrid mode options:"
+msgstr ""
+
+#: envytweaks-kde/contents/ui/configGeneral.qml:34
+msgid "Nvidia mode options:"
+msgstr ""
+
+#: envytweaks-kde/contents/ui/configGeneral.qml:40
+msgid "Icon size:"
+msgstr ""
+
+#: envytweaks-kde/contents/ui/main.qml:75
+msgid "Switching to %1 GPU mode, please wait."
+msgstr ""
+
+#: envytweaks-kde/contents/ui/main.qml:175
+msgid "A change to %1 mode was detected. Please reboot!"
+msgstr ""
+
+#: envytweaks-kde/contents/ui/main.qml:193
+msgid "Root privileges are required."
+msgstr ""
+
+#: envytweaks-kde/contents/ui/main.qml:217
+msgid "You have switched back to the current mode."
+msgstr ""
+
+#: envytweaks-kde/contents/ui/main.qml:315
+#: envytweaks-kde/contents/ui/main.qml:372
+msgid "%1 currently in use."
+msgstr ""
+
+#: envytweaks-kde/contents/ui/main.qml:315
+#: envytweaks-kde/contents/ui/main.qml:372
+msgid "EnvyTweaks is not working."
+msgstr ""
+
+#: envytweaks-kde/contents/ui/main.qml:325
+msgid "Switched to: "
+msgstr ""
+
+#: envytweaks-kde/contents/ui/main.qml:325
+msgid "Please reboot your computer for changes to take effect."
+msgstr ""
+
+#: envytweaks-kde/contents/ui/main.qml:330
+msgid "Change mode:"
+msgstr ""
+
+#: envytweaks-kde/contents/ui/main.qml:354
+msgid "Refresh"
+msgstr ""
+
+#: envytweaks-kde/contents/ui/main.qml:371
+msgid "Switch GPU mode."
 msgstr ""
