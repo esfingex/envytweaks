@@ -1,9 +1,11 @@
 .planning/
 __pycache__/
 *.pyc
+build/
 dist/
 *.egg-info/
 node_modules/
 .pytest_cache/
 gschemas.compiled
+
 
