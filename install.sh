@@ -31,12 +31,25 @@ cp -r envytweaks-gnome/* "$EXTENSION_DIR/"
 echo "Compiling GSettings schemas..."
 glib-compile-schemas "$EXTENSION_DIR/schemas/"
 
-# Set correct ownership for extension files if run under sudo
+# Set correct ownership for GNOME extension files if run under sudo
 if [ "$EUID" -eq 0 ] && [ -n "$SUDO_USER" ]; then
     chown -R "$REAL_USER:$REAL_USER" "$EXTENSION_DIR"
 fi
 
+# 3. Install KDE Plasma Widget
+KDE_DIR="$REAL_HOME/.local/share/plasma/plasmoids/optimus-gpu-switcher"
+if [ -d "envytweaks-kde" ]; then
+    echo "Installing envytweaks-kde to $KDE_DIR..."
+    rm -rf "$KDE_DIR"
+    mkdir -p "$KDE_DIR"
+    cp -r envytweaks-kde/* "$KDE_DIR/"
+    if [ "$EUID" -eq 0 ] && [ -n "$SUDO_USER" ]; then
+        chown -R "$REAL_USER:$REAL_USER" "$KDE_DIR"
+    fi
+fi
+
 echo "=== Installation complete! ==="
-echo "Please reload GNOME Shell (or log out and log in again) to enable the extension."
-echo "You can enable it using:"
+echo "Please reload GNOME Shell (or log out and log in again) to enable the GNOME extension:"
 echo "  gnome-extensions enable envytweaks@cachyos.org"
+echo "For KDE Plasma, the widget 'Optimus GPU Switcher' has been added to your local plasmoids list."
+

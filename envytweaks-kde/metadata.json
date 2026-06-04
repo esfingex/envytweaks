@@ -1,0 +1,24 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "eniel160990@gmail.com",
+                "Name": "Eniel"
+            }
+        ],
+        "Category": "Hardware",
+        "Description": "GUI for the EnvyTweaks tool, intended for switching between GPU modes on Nvidia Optimus systems.",
+        "Description[es]": "Interfaz gráfica para la herramienta EnvyTweaks, destinada a cambiar entre los modos de GPU en los sistemas Nvidia Optimus.",
+
+        "EnabledByDefault": true,
+        "Icon": "video-card-inactive",
+        "Id": "optimus-gpu-switcher",
+        "License": "GPL3",
+        "Name": "Optimus GPU Switcher",
+        "Version": "1.0.3",
+        "Website": ""
+    },
+    "KPackageStructure": "Plasma/Applet",
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-NotificationAreaCategory": "Hardware"
+}
