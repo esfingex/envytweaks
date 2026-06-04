@@ -51,6 +51,15 @@ gnome-extensions enable envytweaks@cachyos.org
 - `envytweaks-gnome/`: GNOME Shell extension package (`extension.js`, `metadata.json`, etc.).
 - `install.sh`: Setup script.
 
+## Credits & Acknowledgements
+
+EnvyTweaks is based on and inspired by the following excellent projects:
+- **[EnvyControl](https://github.com/bayasdev/envycontrol)** by [bayasdev](https://github.com/bayasdev) - The core Python command-line utility for GPU switching.
+- **[GPU Profile Selector](https://github.com/LorenzoMorelli/GPU_profile_selector)** by [Lorenzo Morelli](https://github.com/LorenzoMorelli) - The GNOME Shell extension providing the graphical menu integration.
+
+Thank you to the original authors and contributors for their outstanding work.
+
 ## License
 
 This project is licensed under the MIT License and GNU General Public License v3.0.
+
