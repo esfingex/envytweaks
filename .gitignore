@@ -1,0 +1,7 @@
+.planning/
+__pycache__/
+*.pyc
+dist/
+*.egg-info/
+node_modules/
+.pytest_cache/
