@@ -1,0 +1,26 @@
+{
+  "description": "A GNOME Shell extension that provides an easy way to switch between GPU profiles on Nvidia Optimus systems in just a few clicks. Powered by envytweaks.",
+  "name": "EnvyTweaks GPU Switcher",
+  "shell-version": [
+    "45",
+    "46",
+    "47",
+    "48",
+    "49",
+    "50"
+  ],
+  "gettext-domain": "envytweaks",
+  "url": "https://github.com/esfingex/envytweaks",
+  "uuid": "envytweaks@cachyos.org",
+  "settings-schema": "org.gnome.shell.extensions.envytweaks",
+  "version": 1,
+  "author": "Lorenzo Morelli, CachyOS Developers",
+  "contributors": [
+    "Lorenzo Morelli",
+    "Guilhem Jéhanno",
+    "ihpled",
+    "CherryQuartzio",
+    "Iván Masías"
+  ],
+  "license": "GPL-3.0-or-later"
+}

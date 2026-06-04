@@ -5,3 +5,5 @@ dist/
 *.egg-info/
 node_modules/
 .pytest_cache/
+gschemas.compiled
+
