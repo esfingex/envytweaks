@@ -2,9 +2,10 @@
 
 EnvyTweaks is a modernized GPU mode switching suite for NVIDIA Optimus laptops on Linux. It includes:
 
-1. **[envytweaks-cli](file:///home/esfingex/workspace/envytweaks/envytweaks-cli)**: A modernized, PEP 517-compliant CLI utility ported from EnvyControl, featuring modern Python syntax, strict static typing, and robust caching.
-2. **[envytweaks-gnome](file:///home/esfingex/workspace/envytweaks/envytweaks-gnome)**: A modernized GNOME Shell extension (supporting GNOME 43 to 50) ported from GPU Profile Selector, featuring full Quick Settings and Top Bar integration, dynamic RTD3 settings, and graceful fallback when the CLI tool is not installed.
-3. **[envytweaks-kde](file:///home/esfingex/workspace/envytweaks/envytweaks-kde)**: A modernized KDE Plasma 6 widget ported from Optimus GPU Switcher, allowing seamless GPU switching directly from the system tray under KDE Plasma.
+1. **[envytweaks-cli](envytweaks-cli)**: A modernized, PEP 517-compliant CLI utility ported from EnvyControl, featuring modern Python syntax, strict static typing, and robust caching.
+2. **[envytweaks-gnome](envytweaks-gnome)**: A modernized GNOME Shell extension (supporting GNOME 43 to 50) ported from GPU Profile Selector, featuring full Quick Settings and Top Bar integration, dynamic RTD3 settings, and graceful fallback when the CLI tool is not installed.
+3. **[envytweaks-kde](envytweaks-kde)**: A modernized KDE Plasma 6 widget ported from Optimus GPU Switcher, allowing seamless GPU switching directly from the system tray under KDE Plasma.
+
 
 ## Installation & Setup
 
