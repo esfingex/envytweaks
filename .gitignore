@@ -7,5 +7,7 @@ dist/
 node_modules/
 .pytest_cache/
 gschemas.compiled
+*.zip
+.venv/
 
 
