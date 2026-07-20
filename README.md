@@ -1,6 +1,10 @@
 # EnvyTweaks
 
 [![Get it on GNOME Extensions](https://img.shields.io/badge/Get%20it%20on-GNOME%20Extensions-4a86e8?style=for-the-badge&logo=gnome&logoColor=white)](https://extensions.gnome.org/extension/envytweaks@cachyos.org)
+[![GNOME Shell 43-50+](https://img.shields.io/badge/GNOME%20Shell-43--50%2B-blue?style=for-the-badge&logo=gnome&logoColor=white)](https://extensions.gnome.org/extension/envytweaks@cachyos.org)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![Platform: Linux](https://img.shields.io/badge/Platform-Linux%20%2F%20CachyOS-FCC624?style=for-the-badge&logo=linux&logoColor=black)](https://cachyos.org)
+[![Static Analysis: Shexli Clean](https://img.shields.io/badge/Shexli-Clean%200%20Errors-brightgreen?style=for-the-badge)](https://gjs.guide)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg?style=for-the-badge)](LICENSE)
 
 EnvyTweaks is a modernized GPU mode switching suite for NVIDIA Optimus laptops on Linux. It includes:
