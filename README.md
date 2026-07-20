@@ -1,5 +1,8 @@
 # EnvyTweaks
 
+[![Get it on GNOME Extensions](https://img.shields.io/badge/Get%20it%20on-GNOME%20Extensions-4a86e8?style=for-the-badge&logo=gnome&logoColor=white)](https://extensions.gnome.org/extension/envytweaks@cachyos.org)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg?style=for-the-badge)](LICENSE)
+
 EnvyTweaks is a modernized GPU mode switching suite for NVIDIA Optimus laptops on Linux. It includes:
 
 1. **[envytweaks-cli](envytweaks-cli)**: A modernized, PEP 517-compliant CLI utility ported from EnvyControl, featuring modern Python syntax, strict static typing, and robust caching.
