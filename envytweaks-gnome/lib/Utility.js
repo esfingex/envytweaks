@@ -16,11 +16,15 @@ export function getCurrentProfile() {
     }
 
     try {
-        const [success, stdout, stderr, exitCode] = GLib.spawn_command_line_sync("envytweaks --query");
+        let proc = new Gio.Subprocess({
+            argv: ['envytweaks', '--query'],
+            flags: Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_SILENCE,
+        });
+        proc.init(null);
+        let [ok, stdout] = proc.communicate_utf8(null, null);
 
-        if (success && exitCode === 0) {
-            const textDecoder = new TextDecoder();
-            const profileString = textDecoder.decode(stdout).trim().toLowerCase();
+        if (ok && stdout) {
+            const profileString = stdout.trim().toLowerCase();
 
             if (profileString === GPU_PROFILE_INTEGRATED ||
                 profileString === GPU_PROFILE_HYBRID ||
@@ -29,13 +33,12 @@ export function getCurrentProfile() {
             }
         }
 
-        // If the command failed or returned an unexpected profile
         return GPU_PROFILE_UNKNOWN;
     } catch (e) {
-        // If there was an error running the command
         return GPU_PROFILE_UNKNOWN;
     }
 }
+
 
 export function capitalizeFirstLetter(string) {
     if (!string) return "";
