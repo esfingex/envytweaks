@@ -1,6 +1,6 @@
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
-import * as Util from 'resource:///org/gnome/shell/misc/util.js';
+import * as SystemActions from 'resource:///org/gnome/shell/misc/systemActions.js';
 
 export const EXTENSION_ICON_FILE_NAME = '/img/icon.png';
 
@@ -70,7 +70,8 @@ export function switchNvidia(all_settings, onComplete = null) {
 }
 
 export function requestReboot() {
-    Util.spawn(['gnome-session-quit', '--reboot']);
+    let systemActions = SystemActions.getDefault();
+    systemActions.activateRestart();
 }
 
 function _execSwitch(profile, args, onComplete) {
