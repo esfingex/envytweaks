@@ -77,7 +77,7 @@ export function requestReboot() {
 function _execSwitch(profile, args, onComplete) {
     try {
         let proc = Gio.Subprocess.new(
-            ['pkexec', 'envytweaks', '-s', profile, ...args],
+            ['pkexec', '/usr/bin/envytweaks', '-s', profile, ...args],
             Gio.SubprocessFlags.NONE
         );
 

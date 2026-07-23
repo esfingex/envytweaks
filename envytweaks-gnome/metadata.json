@@ -13,5 +13,5 @@
   "settings-schema": "org.gnome.shell.extensions.envytweaks",
   "gettext-domain": "envytweaks",
   "url": "https://github.com/esfingex/envytweaks",
-  "version": 2
+  "version": 3
 }

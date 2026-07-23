@@ -77,6 +77,10 @@ def main() -> None:
         help="Show the envytweaks cache",
     )
     parser.add_argument(
+        "--dry-run", action="store_true", default=False,
+        help="Previsualize changes without modifying system files",
+    )
+    parser.add_argument(
         "--verbose", action="store_true", default=False,
         help="Enable verbose mode",
     )
@@ -101,11 +105,13 @@ def main() -> None:
 
     # cache management
     if args.cache_create:
-        assert_root()
+        if not args.dry_run:
+            assert_root()
         CachedConfig(args).create_cache_file()
         return
     if args.cache_delete:
-        assert_root()
+        if not args.dry_run:
+            assert_root()
         CachedConfig.delete_cache_file()
         return
 
@@ -113,7 +119,8 @@ def main() -> None:
     if args.switch or args.reset_sddm or args.reset:
         with CachedConfig(args).adapter():
             if args.switch:
-                assert_root()
+                if not args.dry_run:
+                    assert_root()
                 graphics_mode_switcher(
                     args.switch,
                     args.dm,
@@ -121,16 +128,20 @@ def main() -> None:
                     args.coolbits,
                     args.rtd3,
                     args.use_nvidia_current,
+                    dry_run=args.dry_run,
                 )
             elif args.reset_sddm:
-                assert_root()
-                create_file(SDDM_XSETUP_PATH, SDDM_XSETUP_CONTENT, executable=True)
+                if not args.dry_run:
+                    assert_root()
+                create_file(SDDM_XSETUP_PATH, SDDM_XSETUP_CONTENT, executable=True, dry_run=args.dry_run)
                 print("Operation completed successfully")
             elif args.reset:
-                assert_root()
-                cleanup()
-                CachedConfig.delete_cache_file()
-                rebuild_initramfs()
+                if not args.dry_run:
+                    assert_root()
+                cleanup(dry_run=args.dry_run)
+                if not args.dry_run:
+                    CachedConfig.delete_cache_file()
+                    rebuild_initramfs()
                 print("Operation completed successfully")
 
 
