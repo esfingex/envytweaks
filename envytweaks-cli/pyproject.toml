@@ -7,12 +7,12 @@ name = "envytweaks"
 version = "1.0.0"
 description = "GPU mode switcher for NVIDIA Optimus laptops on Linux"
 readme = "README.md"
-license = { text = "MIT" }
+license = "MIT"
 requires-python = ">=3.10"
 keywords = ["nvidia", "optimus", "prime", "gpu", "linux"]
 classifiers = [
     "Development Status :: 4 - Beta",
-    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",

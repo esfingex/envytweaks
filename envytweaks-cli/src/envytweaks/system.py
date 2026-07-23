@@ -61,6 +61,10 @@ def get_igpu_vendor() -> str | None:
     return None
 
 
+STATE_FILE_PATH = Path("/var/lib/envytweaks/current_mode")
+SAFE_PROVIDER_RE = re.compile(r"^[a-zA-Z0-9._-]+$")
+
+
 def get_amd_igpu_name() -> str | None:
     """Return the AMD iGPU provider name from xrandr, or None on failure."""
     if not Path("/usr/bin/xrandr").exists():
@@ -73,13 +77,15 @@ def get_amd_igpu_name() -> str | None:
         ).decode("utf-8")
     except subprocess.CalledProcessError:
         logging.warning("Failed to run 'xrandr --listproviders'")
-        return None  # FIX: was missing — caused UnboundLocalError in envycontrol
+        return None
 
-    pattern = re.compile(r"(name:).*(ATI*|AMD*|AMD\/ATI)*")
-    if pattern.findall(xrandr_output):
-        return re.search(pattern, xrandr_output).group(0)[5:]  # type: ignore[union-attr]
+    match = re.search(r"name:\s*([a-zA-Z0-9._-]+)", xrandr_output)
+    if match:
+        raw_name = match.group(1)
+        if SAFE_PROVIDER_RE.match(raw_name):
+            return raw_name
 
-    logging.warning("Could not find AMD iGPU in xrandr output")
+    logging.warning("Could not find valid AMD iGPU in xrandr output")
     return None
 
 
@@ -116,7 +122,7 @@ def get_display_manager() -> str | None:
 
 
 # ---------------------------------------------------------------------------
-# initramfs rebuild (distro-aware)
+# initramfs rebuild (distro-aware & tool-aware)
 # ---------------------------------------------------------------------------
 
 
@@ -127,24 +133,20 @@ def rebuild_initramfs() -> None:
         return Path("/ostree").exists() or Path("/sysroot/ostree").exists()
 
     match True:
-        case _ if _is_ostree():
+        case _ if _is_ostree() and shutil.which("rpm-ostree"):
             print("Rebuilding the initramfs with rpm-ostree...")
             command = ["rpm-ostree", "initramfs", "--enable", "--arg=--force"]
-        case _ if Path("/etc/debian_version").exists():
-            command = ["update-initramfs", "-u", "-k", "all"]
-        case _ if (
-            Path("/etc/redhat-release").exists()
-            or Path("/usr/bin/zypper").exists()
-        ):
-            command = ["dracut", "--force", "--regenerate-all"]
-        case _ if (
-            Path("/usr/lib/endeavouros-release").exists()
-            and Path("/usr/bin/dracut").exists()
-        ):
+        case _ if shutil.which("mkinitcpio") and (Path("/etc/arch-release").exists() or Path("/etc/cachyos-release").exists()):
+            command = ["mkinitcpio", "-P"]
+        case _ if shutil.which("dracut-rebuild"):
             command = ["dracut-rebuild"]
-        case _ if Path("/etc/altlinux-release").exists():
+        case _ if shutil.which("dracut"):
+            command = ["dracut", "--force", "--regenerate-all"]
+        case _ if shutil.which("update-initramfs"):
+            command = ["update-initramfs", "-u", "-k", "all"]
+        case _ if shutil.which("make-initrd"):
             command = ["make-initrd"]
-        case _ if Path("/etc/arch-release").exists():
+        case _ if shutil.which("mkinitcpio"):
             command = ["mkinitcpio", "-P"]
         case _:
             command = []
@@ -161,7 +163,7 @@ def rebuild_initramfs() -> None:
     if not command:
         return
 
-    print("Rebuilding the initramfs...")
+    print("Rebuilding the initramfs (protecting session shutdown)...")
     result = _run_subprocess(command)
     if result.returncode == 0:
         print("Successfully rebuilt the initramfs!")
@@ -170,7 +172,7 @@ def rebuild_initramfs() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Root check
+# Root check & State management
 # ---------------------------------------------------------------------------
 
 
@@ -181,13 +183,28 @@ def assert_root() -> None:
         sys.exit(1)
 
 
-# ---------------------------------------------------------------------------
-# Current mode detection
-# ---------------------------------------------------------------------------
+def save_current_mode(mode: str, dry_run: bool = False) -> None:
+    """Persist the current mode to STATE_FILE_PATH."""
+    if dry_run:
+        print(f"[DRY-RUN] Would write state '{mode}' to {STATE_FILE_PATH}")
+        return
+    try:
+        STATE_FILE_PATH.parent.mkdir(parents=True, exist_ok=True)
+        STATE_FILE_PATH.write_text(mode, encoding="utf-8")
+    except Exception as e:
+        logging.warning("Could not persist mode to %s: %e", STATE_FILE_PATH, e)
 
 
 def get_current_mode() -> str:
-    """Detect the current GPU mode by checking which config files are present."""
+    """Detect the current GPU mode from state file or config file heuristics."""
+    if STATE_FILE_PATH.exists():
+        try:
+            mode = STATE_FILE_PATH.read_text(encoding="utf-8").strip()
+            if mode in ("integrated", "hybrid", "nvidia"):
+                return mode
+        except Exception:
+            pass
+
     from envytweaks.config import (
         BLACKLIST_PATH,
         UDEV_INTEGRATED_PATH,

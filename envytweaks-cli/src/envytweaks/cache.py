@@ -69,14 +69,34 @@ class CachedConfig:
                 "No cache present. Operation requires the system to be in hybrid mode"
             )
 
-    @staticmethod
-    def delete_cache_file() -> None:
-        CACHE_FILE_PATH.unlink(missing_ok=True)
+    def _write_cache_file(self) -> None:
+        dry_run = getattr(self.app_args, "dry_run", False)
+        if dry_run:
+            print(f"[DRY-RUN] Would create cache file {CACHE_FILE_PATH}")
+            return
         try:
-            CACHE_FILE_PATH.parent.rmdir()
-        except OSError:
-            pass
-        logging.debug("Removed cache file %s", CACHE_FILE_PATH)
+            CACHE_FILE_PATH.parent.mkdir(parents=True, exist_ok=True)
+            CACHE_FILE_PATH.write_text(
+                json.dumps(self._obj, indent=4), encoding="utf-8"
+            )
+            logging.debug("Created cache file %s", CACHE_FILE_PATH)
+        except PermissionError:
+            logging.warning("Could not write cache to %s (insufficient permissions)", CACHE_FILE_PATH)
+
+    @staticmethod
+    def delete_cache_file(dry_run: bool = False) -> None:
+        if dry_run:
+            print(f"[DRY-RUN] Would delete cache file {CACHE_FILE_PATH}")
+            return
+        try:
+            CACHE_FILE_PATH.unlink(missing_ok=True)
+            try:
+                CACHE_FILE_PATH.parent.rmdir()
+            except OSError:
+                pass
+            logging.debug("Removed cache file %s", CACHE_FILE_PATH)
+        except PermissionError:
+            logging.warning("Could not delete cache file %s", CACHE_FILE_PATH)
 
     @staticmethod
     def show_cache_file() -> None:
@@ -91,18 +111,7 @@ class CachedConfig:
             sys.exit(1)
         return self._nvidia_gpu_pci_bus
 
-    # ------------------------------------------------------------------
-    # Internal
-    # ------------------------------------------------------------------
-
     def _is_hybrid(self) -> bool:
         return self.current_mode == "hybrid"
-
-    def _write_cache_file(self) -> None:
-        CACHE_FILE_PATH.parent.mkdir(parents=True, exist_ok=True)
-        CACHE_FILE_PATH.write_text(
-            json.dumps(self._obj, indent=4), encoding="utf-8"
-        )
-        logging.debug("Created cache file %s", CACHE_FILE_PATH)
 
 
