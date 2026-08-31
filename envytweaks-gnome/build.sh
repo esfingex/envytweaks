@@ -1,20 +1,30 @@
 #!/usr/bin/env bash
 set -e
 
-echo "📦 Compilando y empaquetando EnvyTweaks GPU Switcher v2..."
+echo "📦 Compilando y empaquetando EnvyTweaks GPU Switcher..."
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-# 1. Compilar esquemas GSettings localmente
-if command -v glib-compile-schemas >/dev/null 2>&1; then
-    echo "[*] Compilando esquemas GSettings localmente..."
-    glib-compile-schemas schemas/
-fi
+# 1. Eliminar gschemas.compiled previo si existe
+rm -f schemas/gschemas.compiled
 
-# 2. Empaquetar Extensión de GNOME Shell (.zip) para extensions.gnome.org (excluyendo gschemas.compiled según guías GNOME 45+)
-echo "[*] Creando paquete zip para extensions.gnome.org..."
-zip -FS -r envytweaks@cachyos.org.shell-extension.zip metadata.json extension.js prefs.js img/ lib/ locale/ schemas/ ui/ -x "*.zip" -x "schemas/gschemas.compiled"
+# 2. Empaquetar Extensión de GNOME Shell (.zip) limpia para extensions.gnome.org
+echo "[*] Creando paquete zip limpio para extensions.gnome.org..."
+rm -f envytweaks@cachyos.org.shell-extension.zip
 
-echo "✅ ¡Empaquetado exitoso!"
+zip -r envytweaks@cachyos.org.shell-extension.zip \
+    metadata.json \
+    extension.js \
+    prefs.js \
+    img/ \
+    lib/ \
+    locale/ \
+    schemas/ \
+    ui/ \
+    -x "schemas/gschemas.compiled" \
+    -x "build.sh" \
+    -x "*.zip"
+
+echo "✅ ¡Empaquetado limpio exitoso!"
 echo "   - Extensión Zip: envytweaks-gnome/envytweaks@cachyos.org.shell-extension.zip"
