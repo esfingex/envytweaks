@@ -103,7 +103,6 @@ python3 diagnose.py
 
 
 ---
-
 ## File: .github/workflows/ci.yml
 ```yml
 name: CI
