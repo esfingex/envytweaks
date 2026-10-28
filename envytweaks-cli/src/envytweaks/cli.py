@@ -7,16 +7,14 @@ import sys
 from envytweaks import VERSION
 from envytweaks.cache import CachedConfig, get_current_mode
 from envytweaks.config import (
-    SDDM_XSETUP_PATH,
-    SDDM_XSETUP_CONTENT,
-    SUPPORTED_MODES,
-    SUPPORTED_DISPLAY_MANAGERS,
     RTD3_MODES,
-    create_file,
+    SUPPORTED_DISPLAY_MANAGERS,
+    SUPPORTED_MODES,
     cleanup,
+    reset_sddm_xsetup,
 )
-from envytweaks.system import assert_root, rebuild_initramfs
 from envytweaks.switcher import graphics_mode_switcher
+from envytweaks.system import assert_root, rebuild_initramfs
 
 
 def main() -> None:
@@ -107,20 +105,24 @@ def main() -> None:
     if args.cache_create:
         if not args.dry_run:
             assert_root()
-        CachedConfig(args).create_cache_file()
+        try:
+            CachedConfig(args).create_cache_file()
+        except ValueError as e:
+            logging.error("%s", e)
+            sys.exit(1)
         return
     if args.cache_delete:
         if not args.dry_run:
             assert_root()
-        CachedConfig.delete_cache_file()
+        CachedConfig.delete_cache_file(dry_run=args.dry_run)
         return
 
     # write operations
-    if args.switch or args.reset_sddm or args.reset:
-        with CachedConfig(args).adapter():
-            if args.switch:
-                if not args.dry_run:
-                    assert_root()
+    if args.switch:
+        if not args.dry_run:
+            assert_root()
+        try:
+            with CachedConfig(args).adapter():
                 graphics_mode_switcher(
                     args.switch,
                     args.dm,
@@ -130,19 +132,26 @@ def main() -> None:
                     args.use_nvidia_current,
                     dry_run=args.dry_run,
                 )
-            elif args.reset_sddm:
-                if not args.dry_run:
-                    assert_root()
-                create_file(SDDM_XSETUP_PATH, SDDM_XSETUP_CONTENT, executable=True, dry_run=args.dry_run)
-                print("Operation completed successfully")
-            elif args.reset:
-                if not args.dry_run:
-                    assert_root()
-                cleanup(dry_run=args.dry_run)
-                if not args.dry_run:
-                    CachedConfig.delete_cache_file()
-                    rebuild_initramfs()
-                print("Operation completed successfully")
+        except ValueError as e:
+            logging.error("%s", e)
+            sys.exit(1)
+        return
+
+    if args.reset_sddm:
+        if not args.dry_run:
+            assert_root()
+        reset_sddm_xsetup(dry_run=args.dry_run)
+        print("Operation completed successfully")
+        return
+
+    if args.reset:
+        if not args.dry_run:
+            assert_root()
+        cleanup(dry_run=args.dry_run)
+        CachedConfig.delete_cache_file(dry_run=args.dry_run)
+        if not args.dry_run:
+            rebuild_initramfs()
+        print("Operation completed successfully")
 
 
 if __name__ == "__main__":

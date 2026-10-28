@@ -10,7 +10,6 @@ from pathlib import Path
 
 from envytweaks.config import NVIDIA_XRANDR_SCRIPT
 
-
 # ---------------------------------------------------------------------------
 # Subprocess helper
 # ---------------------------------------------------------------------------
@@ -192,7 +191,7 @@ def save_current_mode(mode: str, dry_run: bool = False) -> None:
         STATE_FILE_PATH.parent.mkdir(parents=True, exist_ok=True)
         STATE_FILE_PATH.write_text(mode, encoding="utf-8")
     except Exception as e:
-        logging.warning("Could not persist mode to %s: %e", STATE_FILE_PATH, e)
+        logging.warning("Could not persist mode to %s: %s", STATE_FILE_PATH, e)
 
 
 def get_current_mode() -> str:
@@ -207,9 +206,9 @@ def get_current_mode() -> str:
 
     from envytweaks.config import (
         BLACKLIST_PATH,
+        MODESET_PATH,
         UDEV_INTEGRATED_PATH,
         XORG_PATH,
-        MODESET_PATH,
     )
 
     blacklist_active = BLACKLIST_PATH.exists()

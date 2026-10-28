@@ -3,19 +3,18 @@
 import json
 import logging
 import sys
+from collections.abc import Generator
 from contextlib import contextmanager
-from pathlib import Path
-from typing import Generator
 
 from envytweaks.config import CACHE_FILE_PATH
-from envytweaks.system import get_nvidia_gpu_pci_bus, get_current_mode
+from envytweaks.system import get_current_mode, get_nvidia_gpu_pci_bus
 
 
 class CachedConfig:
     """Adapter that caches the NVIDIA GPU PCI bus ID to avoid lspci failures
     when switching from integrated mode (where the GPU is powered off)."""
 
-    def __init__(self, app_args) -> None:  # noqa: ANN001
+    def __init__(self, app_args) -> None:
         self.app_args = app_args
         self.current_mode: str = get_current_mode()
         self._nvidia_gpu_pci_bus: str | None = None
@@ -31,12 +30,11 @@ class CachedConfig:
         import envytweaks.system as _system
 
         original_fn = _system.get_nvidia_gpu_pci_bus
-        use_cache = CACHE_FILE_PATH.exists()
 
         if self._is_hybrid():
             self.create_cache_file()
 
-        if use_cache:
+        if CACHE_FILE_PATH.exists():
             self.read_cache_file()
             _system.get_nvidia_gpu_pci_bus = self.get_nvidia_gpu_pci_bus  # type: ignore[method-assign]
 
@@ -60,8 +58,22 @@ class CachedConfig:
 
     def read_cache_file(self) -> None:
         if CACHE_FILE_PATH.exists():
-            self._obj = json.loads(CACHE_FILE_PATH.read_text(encoding="utf-8"))
-            self._nvidia_gpu_pci_bus = self._obj["nvidia_gpu_pci_bus"]
+            try:
+                obj = json.loads(CACHE_FILE_PATH.read_text(encoding="utf-8"))
+                bus = obj["nvidia_gpu_pci_bus"]
+                if not isinstance(bus, str) or not bus.strip():
+                    raise ValueError("empty nvidia_gpu_pci_bus")
+                self._obj = obj
+                self._nvidia_gpu_pci_bus = bus
+            except (OSError, json.JSONDecodeError, KeyError, TypeError, ValueError) as e:
+                logging.warning("Ignoring invalid cache file %s: %s", CACHE_FILE_PATH, e)
+                if self._is_hybrid():
+                    self._nvidia_gpu_pci_bus = get_nvidia_gpu_pci_bus()
+                else:
+                    raise ValueError(
+                        "No valid cache present. Operation requires the system "
+                        "to be in hybrid mode"
+                    ) from e
         elif self._is_hybrid():
             self._nvidia_gpu_pci_bus = get_nvidia_gpu_pci_bus()
         else:
@@ -80,8 +92,8 @@ class CachedConfig:
                 json.dumps(self._obj, indent=4), encoding="utf-8"
             )
             logging.debug("Created cache file %s", CACHE_FILE_PATH)
-        except PermissionError:
-            logging.warning("Could not write cache to %s (insufficient permissions)", CACHE_FILE_PATH)
+        except OSError as e:
+            logging.warning("Could not write cache to %s: %s", CACHE_FILE_PATH, e)
 
     @staticmethod
     def delete_cache_file(dry_run: bool = False) -> None:
@@ -95,8 +107,8 @@ class CachedConfig:
             except OSError:
                 pass
             logging.debug("Removed cache file %s", CACHE_FILE_PATH)
-        except PermissionError:
-            logging.warning("Could not delete cache file %s", CACHE_FILE_PATH)
+        except OSError as e:
+            logging.warning("Could not delete cache file %s: %s", CACHE_FILE_PATH, e)
 
     @staticmethod
     def show_cache_file() -> None:

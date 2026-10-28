@@ -32,6 +32,11 @@ jobs:
         run: |
           python -m py_compile envytweaks-cli/src/envytweaks/*.py
 
+      - name: Run tests
+        run: |
+          cd envytweaks-cli
+          pytest -q
+
       - name: Install package dry-run
         run: |
           cd envytweaks-cli

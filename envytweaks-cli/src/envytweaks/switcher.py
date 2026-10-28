@@ -1,41 +1,40 @@
 """switcher.py — Main GPU mode switching logic for envytweaks."""
 
 import logging
-import subprocess
 
+from envytweaks import system
 from envytweaks.config import (
-    BLACKLIST_PATH,
     BLACKLIST_CONTENT,
+    BLACKLIST_PATH,
     COOLBITS_TEMPLATE,
-    EXTRA_XORG_PATH,
     EXTRA_XORG_CONTENT,
+    EXTRA_XORG_PATH,
     FORCE_COMP,
-    LIGHTDM_CONFIG_PATH,
     LIGHTDM_CONFIG_CONTENT,
+    LIGHTDM_CONFIG_PATH,
     LIGHTDM_SCRIPT_PATH,
-    MODESET_PATH,
     MODESET_CONTENT,
     MODESET_CURRENT_CONTENT,
-    MODESET_RTD3,
-    MODESET_CURRENT_RTD3,
+    MODESET_PATH,
+    SDDM_XSETUP_BACKUP_PATH,
     SDDM_XSETUP_PATH,
-    SDDM_XSETUP_CONTENT,
-    UDEV_INTEGRATED_PATH,
     UDEV_INTEGRATED,
-    UDEV_PM_PATH,
+    UDEV_INTEGRATED_PATH,
     UDEV_PM_CONTENT,
-    XORG_PATH,
-    XORG_INTEL,
+    UDEV_PM_PATH,
     XORG_AMD,
-    create_file,
+    XORG_INTEL,
+    XORG_PATH,
+    build_modeset_rtd3,
     cleanup,
+    create_file,
+    is_generated_file,
 )
 from envytweaks.system import (
     _run_subprocess,
     generate_xrandr_script,
     get_display_manager,
     get_igpu_vendor,
-    get_nvidia_gpu_pci_bus,
     rebuild_initramfs,
     save_current_mode,
 )
@@ -87,11 +86,11 @@ def graphics_mode_switcher(
                 else:
                     logging.error("An error occurred while enabling service")
 
-            if rtd3_value is None:
+            if rtd3_value is None or rtd3_value == 0:
                 modeset = MODESET_CURRENT_CONTENT if use_nvidia_current else MODESET_CONTENT
             else:
-                template = MODESET_CURRENT_RTD3 if use_nvidia_current else MODESET_RTD3
-                modeset = template.format(rtd3_value)
+                driver = "nvidia-current" if use_nvidia_current else "nvidia"
+                modeset = build_modeset_rtd3(rtd3_value, driver)
                 create_file(UDEV_PM_PATH, UDEV_PM_CONTENT, dry_run=dry_run)
 
             create_file(MODESET_PATH, modeset, dry_run=dry_run)
@@ -114,7 +113,7 @@ def graphics_mode_switcher(
                     logging.error("An error occurred while enabling service")
 
             cleanup(dry_run=dry_run)
-            nvidia_pci_bus = get_nvidia_gpu_pci_bus()
+            nvidia_pci_bus = system.get_nvidia_gpu_pci_bus()
             igpu_vendor = get_igpu_vendor()
 
             match igpu_vendor:
@@ -155,10 +154,14 @@ def graphics_mode_switcher(
 
             match display_manager:
                 case "sddm":
-                    if SDDM_XSETUP_PATH.exists():
+                    if (
+                        SDDM_XSETUP_PATH.exists()
+                        and not SDDM_XSETUP_BACKUP_PATH.exists()
+                        and not is_generated_file(SDDM_XSETUP_PATH)
+                    ):
                         logging.info("Creating Xsetup backup")
                         create_file(
-                            SDDM_XSETUP_PATH.with_suffix(".sh.bak"),
+                            SDDM_XSETUP_BACKUP_PATH,
                             SDDM_XSETUP_PATH.read_text(encoding="utf-8"),
                             dry_run=dry_run,
                         )

@@ -7,21 +7,40 @@ name = "envytweaks"
 version = "1.0.1"
 description = "GPU mode switcher for NVIDIA Optimus laptops on Linux"
 readme = "README.md"
-license = "MIT"
+license = { text = "GPL-3.0-only" }
 requires-python = ">=3.10"
 keywords = ["nvidia", "optimus", "prime", "gpu", "linux"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Operating System :: POSIX :: Linux",
 ]
+
+[project.urls]
+Homepage = "https://github.com/esfingex/envytweaks"
+Repository = "https://github.com/esfingex/envytweaks"
+Issues = "https://github.com/esfingex/envytweaks/issues"
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6"]
 
 [project.scripts]
 envytweaks = "envytweaks.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
