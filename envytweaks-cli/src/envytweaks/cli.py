@@ -14,7 +14,7 @@ from envytweaks.config import (
     reset_sddm_xsetup,
 )
 from envytweaks.switcher import graphics_mode_switcher
-from envytweaks.system import assert_root, rebuild_initramfs
+from envytweaks.system import assert_root, clear_current_mode, rebuild_initramfs
 
 
 def main() -> None:
@@ -147,7 +147,8 @@ def main() -> None:
     if args.reset:
         if not args.dry_run:
             assert_root()
-        cleanup(dry_run=args.dry_run)
+        cleanup(dry_run=args.dry_run, restore_backups=True)
+        clear_current_mode(dry_run=args.dry_run)
         CachedConfig.delete_cache_file(dry_run=args.dry_run)
         if not args.dry_run:
             rebuild_initramfs()

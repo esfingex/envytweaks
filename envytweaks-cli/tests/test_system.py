@@ -23,3 +23,27 @@ def test_get_current_mode_reads_state_file(monkeypatch, tmp_path) -> None:
     monkeypatch.setattr(system, "STATE_FILE_PATH", state_path)
 
     assert system.get_current_mode() == "nvidia"
+
+
+def test_clear_current_mode_removes_state_file(monkeypatch, tmp_path) -> None:
+    state_dir = tmp_path / "envytweaks"
+    state_dir.mkdir()
+    state_path = state_dir / "current_mode"
+    state_path.write_text("hybrid", encoding="utf-8")
+    monkeypatch.setattr(system, "STATE_FILE_PATH", state_path)
+
+    system.clear_current_mode()
+
+    assert not state_path.exists()
+    assert not state_dir.exists()
+
+
+def test_clear_current_mode_dry_run_keeps_state(monkeypatch, tmp_path, capsys) -> None:
+    state_path = tmp_path / "current_mode"
+    state_path.write_text("hybrid", encoding="utf-8")
+    monkeypatch.setattr(system, "STATE_FILE_PATH", state_path)
+
+    system.clear_current_mode(dry_run=True)
+
+    assert state_path.exists()
+    assert "Would remove state file" in capsys.readouterr().out

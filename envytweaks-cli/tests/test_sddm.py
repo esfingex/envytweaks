@@ -16,7 +16,7 @@ def _patch_paths(monkeypatch, tmp_path):
 
 def test_restore_backup_recovers_original_and_removes_backup(monkeypatch, tmp_path) -> None:
     xsetup, backup = _patch_paths(monkeypatch, tmp_path)
-    xsetup.write_text("# generated\n", encoding="utf-8")
+    xsetup.write_text(f"# {config.GENERATED_MARKER}\n", encoding="utf-8")
     backup.write_text("original script\n", encoding="utf-8")
 
     assert config.restore_sddm_xsetup() is True
@@ -28,13 +28,13 @@ def test_restore_backup_recovers_original_and_removes_backup(monkeypatch, tmp_pa
 
 def test_restore_dry_run_keeps_backup(monkeypatch, tmp_path, capsys) -> None:
     xsetup, backup = _patch_paths(monkeypatch, tmp_path)
-    xsetup.write_text("# generated\n", encoding="utf-8")
+    xsetup.write_text(f"# {config.GENERATED_MARKER}\n", encoding="utf-8")
     backup.write_text("original script\n", encoding="utf-8")
 
     assert config.restore_sddm_xsetup(dry_run=True) is True
 
     assert backup.exists()
-    assert xsetup.read_text(encoding="utf-8") == "# generated\n"
+    assert config.is_generated_file(xsetup)
     assert "Would restore Xsetup backup" in capsys.readouterr().out
 
 
@@ -63,13 +63,20 @@ def test_restore_without_backup_returns_false(monkeypatch, tmp_path) -> None:
     assert config.restore_sddm_xsetup() is False
 
 
-def test_nvidia_sddm_backs_up_original_with_expected_name(monkeypatch, tmp_path) -> None:
+def test_reset_without_backup_keeps_unmanaged_xsetup(monkeypatch, tmp_path) -> None:
+    xsetup, _backup = _patch_paths(monkeypatch, tmp_path)
+    xsetup.write_text("user script\n", encoding="utf-8")
+
+    config.reset_sddm_xsetup()
+
+    assert xsetup.read_text(encoding="utf-8") == "user script\n"
+
+
+def test_nvidia_sddm_writes_generated_script_to_xsetup(monkeypatch, tmp_path) -> None:
     xsetup = tmp_path / "Xsetup"
-    backup = tmp_path / "Xsetup.envytweaks.bak"
     xsetup.write_text("original script\n", encoding="utf-8")
 
     monkeypatch.setattr(switcher, "SDDM_XSETUP_PATH", xsetup)
-    monkeypatch.setattr(switcher, "SDDM_XSETUP_BACKUP_PATH", backup)
     monkeypatch.setattr(switcher, "cleanup", lambda **kwargs: None)
     monkeypatch.setattr(
         switcher,
@@ -90,7 +97,6 @@ def test_nvidia_sddm_backs_up_original_with_expected_name(monkeypatch, tmp_path)
 
     switcher.graphics_mode_switcher("nvidia", "sddm", False, None, None, False)
 
-    assert written[backup] == "original script\n"
     assert "xrandr --setprovideroutputsource" in written[xsetup]
     assert not (tmp_path / "Xsetup.sh.bak").exists()
 

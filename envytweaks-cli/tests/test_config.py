@@ -32,6 +32,49 @@ def test_create_file_returns_false_on_write_error(tmp_path) -> None:
     assert config.create_file(target, "content\n") is False
 
 
+def test_create_file_backs_up_user_file(tmp_path) -> None:
+    target = tmp_path / "xorg.conf"
+    target.write_text("user config\n", encoding="utf-8")
+
+    assert config.create_file(target, "# generated\n") is True
+
+    assert target.read_text(encoding="utf-8") == "# generated\n"
+    backup = config.backup_path(target)
+    assert backup.read_text(encoding="utf-8") == "user config\n"
+
+
+def test_create_file_refuses_when_backup_already_exists(tmp_path) -> None:
+    target = tmp_path / "xorg.conf"
+    target.write_text("user config\n", encoding="utf-8")
+    config.backup_path(target).write_text("older config\n", encoding="utf-8")
+
+    assert config.create_file(target, "# generated\n") is False
+
+    assert target.read_text(encoding="utf-8") == "user config\n"
+    assert config.backup_path(target).read_text(encoding="utf-8") == "older config\n"
+
+
+def test_create_file_overwrites_generated_file_without_backup(tmp_path) -> None:
+    target = tmp_path / "xorg.conf"
+    target.write_text(f"# {config.GENERATED_MARKER}\nold\n", encoding="utf-8")
+
+    assert config.create_file(target, "# generated\n") is True
+
+    assert target.read_text(encoding="utf-8") == "# generated\n"
+    assert not config.backup_path(target).exists()
+
+
+def test_create_file_dry_run_reports_backup_without_writing(tmp_path, capsys) -> None:
+    target = tmp_path / "xorg.conf"
+    target.write_text("user config\n", encoding="utf-8")
+
+    assert config.create_file(target, "# generated\n", dry_run=True) is True
+
+    assert target.read_text(encoding="utf-8") == "user config\n"
+    assert not config.backup_path(target).exists()
+    assert "Would back up" in capsys.readouterr().out
+
+
 @pytest.mark.parametrize(
     ("content", "expected"),
     [

@@ -194,6 +194,22 @@ def save_current_mode(mode: str, dry_run: bool = False) -> None:
         logging.warning("Could not persist mode to %s: %s", STATE_FILE_PATH, e)
 
 
+def clear_current_mode(dry_run: bool = False) -> None:
+    """Remove the persisted mode so detection falls back to config heuristics."""
+    if dry_run:
+        print(f"[DRY-RUN] Would remove state file {STATE_FILE_PATH}")
+        return
+    try:
+        STATE_FILE_PATH.unlink(missing_ok=True)
+        try:
+            STATE_FILE_PATH.parent.rmdir()
+        except OSError:
+            pass
+        logging.debug("Removed state file %s", STATE_FILE_PATH)
+    except OSError as e:
+        logging.warning("Could not remove state file %s: %s", STATE_FILE_PATH, e)
+
+
 def get_current_mode() -> str:
     """Detect the current GPU mode from state file or config file heuristics."""
     if STATE_FILE_PATH.exists():

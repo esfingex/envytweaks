@@ -16,7 +16,6 @@ from envytweaks.config import (
     MODESET_CONTENT,
     MODESET_CURRENT_CONTENT,
     MODESET_PATH,
-    SDDM_XSETUP_BACKUP_PATH,
     SDDM_XSETUP_PATH,
     UDEV_INTEGRATED,
     UDEV_INTEGRATED_PATH,
@@ -28,7 +27,6 @@ from envytweaks.config import (
     build_modeset_rtd3,
     cleanup,
     create_file,
-    is_generated_file,
 )
 from envytweaks.system import (
     _run_subprocess,
@@ -154,17 +152,6 @@ def graphics_mode_switcher(
 
             match display_manager:
                 case "sddm":
-                    if (
-                        SDDM_XSETUP_PATH.exists()
-                        and not SDDM_XSETUP_BACKUP_PATH.exists()
-                        and not is_generated_file(SDDM_XSETUP_PATH)
-                    ):
-                        logging.info("Creating Xsetup backup")
-                        create_file(
-                            SDDM_XSETUP_BACKUP_PATH,
-                            SDDM_XSETUP_PATH.read_text(encoding="utf-8"),
-                            dry_run=dry_run,
-                        )
                     create_file(
                         SDDM_XSETUP_PATH,
                         generate_xrandr_script(igpu_vendor),
