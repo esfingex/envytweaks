@@ -123,7 +123,7 @@ def main() -> None:
             assert_root()
         try:
             with CachedConfig(args).adapter():
-                graphics_mode_switcher(
+                switched = graphics_mode_switcher(
                     args.switch,
                     args.dm,
                     args.force_comp,
@@ -134,6 +134,9 @@ def main() -> None:
                 )
         except ValueError as e:
             logging.error("%s", e)
+            sys.exit(1)
+        if not switched:
+            logging.error("GPU mode switch aborted; current mode was not saved")
             sys.exit(1)
         return
 

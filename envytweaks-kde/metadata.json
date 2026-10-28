@@ -16,7 +16,7 @@
         "License": "GPL3",
         "Name": "Optimus GPU Switcher",
         "Version": "1.0.3",
-        "Website": ""
+        "Website": "https://github.com/esfingex/envytweaks"
     },
     "KPackageStructure": "Plasma/Applet",
     "X-Plasma-API-Minimum-Version": "6.0",

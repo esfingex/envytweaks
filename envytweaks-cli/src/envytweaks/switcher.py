@@ -38,6 +38,14 @@ from envytweaks.system import (
 )
 
 
+def _write(path, content: str, **kwargs) -> bool:
+    """Write a managed file and abort the switch if it cannot be applied."""
+    if create_file(path, content, **kwargs):
+        return True
+    logging.error("Aborting: could not write %s", path)
+    return False
+
+
 def graphics_mode_switcher(
     graphics_mode: str,
     user_display_manager: str | None,
@@ -46,8 +54,12 @@ def graphics_mode_switcher(
     rtd3_value: int | None,
     use_nvidia_current: bool,
     dry_run: bool = False,
-) -> None:
-    """Switch the GPU mode to integrated, hybrid, or nvidia."""
+) -> bool:
+    """Switch the GPU mode to integrated, hybrid, or nvidia.
+
+    Returns True when every required file was written, False when the switch
+    was aborted (for example because a user backup already exists).
+    """
     print(f"Switching to {graphics_mode} mode{' (DRY-RUN)' if dry_run else ''}")
 
     match graphics_mode:
@@ -64,8 +76,10 @@ def graphics_mode_switcher(
                     logging.error("An error occurred while disabling service")
 
             cleanup(dry_run=dry_run)
-            create_file(BLACKLIST_PATH, BLACKLIST_CONTENT, dry_run=dry_run)
-            create_file(UDEV_INTEGRATED_PATH, UDEV_INTEGRATED, dry_run=dry_run)
+            if not _write(BLACKLIST_PATH, BLACKLIST_CONTENT, dry_run=dry_run):
+                return False
+            if not _write(UDEV_INTEGRATED_PATH, UDEV_INTEGRATED, dry_run=dry_run):
+                return False
             if not dry_run:
                 rebuild_initramfs()
 
@@ -89,9 +103,11 @@ def graphics_mode_switcher(
             else:
                 driver = "nvidia-current" if use_nvidia_current else "nvidia"
                 modeset = build_modeset_rtd3(rtd3_value, driver)
-                create_file(UDEV_PM_PATH, UDEV_PM_CONTENT, dry_run=dry_run)
+                if not _write(UDEV_PM_PATH, UDEV_PM_CONTENT, dry_run=dry_run):
+                    return False
 
-            create_file(MODESET_PATH, modeset, dry_run=dry_run)
+            if not _write(MODESET_PATH, modeset, dry_run=dry_run):
+                return False
             if not dry_run:
                 rebuild_initramfs()
 
@@ -116,56 +132,62 @@ def graphics_mode_switcher(
 
             match igpu_vendor:
                 case "intel":
-                    create_file(XORG_PATH, XORG_INTEL.format(nvidia_pci_bus), dry_run=dry_run)
+                    if not _write(XORG_PATH, XORG_INTEL.format(nvidia_pci_bus), dry_run=dry_run):
+                        return False
                 case "amd":
-                    create_file(XORG_PATH, XORG_AMD.format(nvidia_pci_bus), dry_run=dry_run)
+                    if not _write(XORG_PATH, XORG_AMD.format(nvidia_pci_bus), dry_run=dry_run):
+                        return False
 
             modeset = MODESET_CURRENT_CONTENT if use_nvidia_current else MODESET_CONTENT
-            create_file(MODESET_PATH, modeset, dry_run=dry_run)
+            if not _write(MODESET_PATH, modeset, dry_run=dry_run):
+                return False
 
             # optional extra Xorg config
+            extra_xorg: str | None = None
             if enable_force_comp and coolbits_value is not None:
-                create_file(
-                    EXTRA_XORG_PATH,
+                extra_xorg = (
                     EXTRA_XORG_CONTENT
                     + FORCE_COMP
                     + COOLBITS_TEMPLATE.format(coolbits_value)
-                    + "EndSection\n",
-                    dry_run=dry_run,
+                    + "EndSection\n"
                 )
             elif enable_force_comp:
-                create_file(
-                    EXTRA_XORG_PATH,
-                    EXTRA_XORG_CONTENT + FORCE_COMP + "EndSection\n",
-                    dry_run=dry_run,
-                )
+                extra_xorg = EXTRA_XORG_CONTENT + FORCE_COMP + "EndSection\n"
             elif coolbits_value is not None:
-                create_file(
-                    EXTRA_XORG_PATH,
+                extra_xorg = (
                     EXTRA_XORG_CONTENT
                     + COOLBITS_TEMPLATE.format(coolbits_value)
-                    + "EndSection\n",
-                    dry_run=dry_run,
+                    + "EndSection\n"
                 )
+
+            if extra_xorg is not None and not _write(
+                EXTRA_XORG_PATH, extra_xorg, dry_run=dry_run
+            ):
+                return False
 
             display_manager = user_display_manager or get_display_manager()
 
             match display_manager:
                 case "sddm":
-                    create_file(
+                    if not _write(
                         SDDM_XSETUP_PATH,
                         generate_xrandr_script(igpu_vendor),
                         executable=True,
                         dry_run=dry_run,
-                    )
+                    ):
+                        return False
                 case "lightdm":
-                    create_file(
+                    if not _write(
                         LIGHTDM_SCRIPT_PATH,
                         generate_xrandr_script(igpu_vendor),
                         executable=True,
                         dry_run=dry_run,
-                    )
-                    create_file(LIGHTDM_CONFIG_PATH, LIGHTDM_CONFIG_CONTENT, dry_run=dry_run)
+                    ):
+                        return False
+                    if not _write(
+                        LIGHTDM_CONFIG_PATH, LIGHTDM_CONFIG_CONTENT, dry_run=dry_run
+                    ):
+                        return False
 
             if not dry_run:
                 rebuild_initramfs()
@@ -174,3 +196,4 @@ def graphics_mode_switcher(
     print("Operation completed successfully")
     if not dry_run:
         print("Please reboot your computer for changes to take effect!")
+    return True

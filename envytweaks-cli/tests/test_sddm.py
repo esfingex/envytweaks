@@ -72,6 +72,16 @@ def test_reset_without_backup_keeps_unmanaged_xsetup(monkeypatch, tmp_path) -> N
     assert xsetup.read_text(encoding="utf-8") == "user script\n"
 
 
+def test_reset_skips_when_sddm_is_not_installed(monkeypatch, tmp_path) -> None:
+    xsetup = tmp_path / "missing-sddm" / "Xsetup"
+    monkeypatch.setattr(config, "SDDM_XSETUP_PATH", xsetup)
+    monkeypatch.setattr(config, "SDDM_XSETUP_BACKUP_PATH", config.backup_path(xsetup))
+
+    config.reset_sddm_xsetup()
+
+    assert not xsetup.exists()
+
+
 def test_nvidia_sddm_writes_generated_script_to_xsetup(monkeypatch, tmp_path) -> None:
     xsetup = tmp_path / "Xsetup"
     xsetup.write_text("original script\n", encoding="utf-8")
@@ -92,7 +102,7 @@ def test_nvidia_sddm_writes_generated_script_to_xsetup(monkeypatch, tmp_path) ->
     monkeypatch.setattr(
         switcher,
         "create_file",
-        lambda target, content, **kwargs: written.__setitem__(target, content),
+        lambda target, content, **kwargs: written.__setitem__(target, content) or True,
     )
 
     switcher.graphics_mode_switcher("nvidia", "sddm", False, None, None, False)

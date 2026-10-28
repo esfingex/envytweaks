@@ -3,7 +3,6 @@
 import stat
 
 import pytest
-
 from envytweaks import config
 
 

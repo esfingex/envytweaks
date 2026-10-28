@@ -25,12 +25,12 @@ jobs:
 
       - name: Lint with Ruff
         run: |
-          # run ruff on the cli directory
-          ruff check envytweaks-cli/
+          # run ruff on the cli and the diagnostic script
+          ruff check envytweaks-cli/ diagnose.py
 
       - name: Syntax compile check
         run: |
-          python -m py_compile envytweaks-cli/src/envytweaks/*.py
+          python -m py_compile envytweaks-cli/src/envytweaks/*.py diagnose.py
 
       - name: Run tests
         run: |

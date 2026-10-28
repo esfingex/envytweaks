@@ -3,7 +3,6 @@
 from types import SimpleNamespace
 
 import pytest
-
 from envytweaks import switcher
 from envytweaks.config import (
     MODESET_PATH,
@@ -37,7 +36,7 @@ def _patch_hybrid(monkeypatch, written: dict) -> None:
     monkeypatch.setattr(
         switcher,
         "create_file",
-        lambda path, content, **kwargs: written.__setitem__(path, content),
+        lambda path, content, **kwargs: written.__setitem__(path, content) or True,
     )
 
 
@@ -45,12 +44,59 @@ def test_hybrid_switch_writes_selected_rtd3(monkeypatch) -> None:
     written: dict = {}
     _patch_hybrid(monkeypatch, written)
 
-    switcher.graphics_mode_switcher(
+    assert switcher.graphics_mode_switcher(
         "hybrid", None, False, None, 3, False
-    )
+    ) is True
 
     assert 'NVreg_DynamicPowerManagement=0x03' in written[MODESET_PATH]
     assert UDEV_PM_PATH in written
+
+
+def test_hybrid_switch_aborts_when_write_fails(monkeypatch) -> None:
+    called = {"rebuild": False, "save": False}
+    monkeypatch.setattr(switcher, "cleanup", lambda **kwargs: None)
+    monkeypatch.setattr(
+        switcher,
+        "_run_subprocess",
+        lambda cmd: SimpleNamespace(returncode=0),
+    )
+    monkeypatch.setattr(
+        switcher, "rebuild_initramfs", lambda: called.update(rebuild=True)
+    )
+    monkeypatch.setattr(
+        switcher, "save_current_mode", lambda *args, **kwargs: called.update(save=True)
+    )
+    monkeypatch.setattr(switcher, "create_file", lambda *args, **kwargs: False)
+
+    assert switcher.graphics_mode_switcher(
+        "hybrid", None, False, None, 2, False
+    ) is False
+    assert called == {"rebuild": False, "save": False}
+
+
+def test_nvidia_switch_aborts_when_write_fails(monkeypatch) -> None:
+    called = {"rebuild": False, "save": False}
+    monkeypatch.setattr(switcher, "cleanup", lambda **kwargs: None)
+    monkeypatch.setattr(
+        switcher,
+        "_run_subprocess",
+        lambda cmd: SimpleNamespace(returncode=0),
+    )
+    monkeypatch.setattr(
+        switcher, "rebuild_initramfs", lambda: called.update(rebuild=True)
+    )
+    monkeypatch.setattr(
+        switcher, "save_current_mode", lambda *args, **kwargs: called.update(save=True)
+    )
+    monkeypatch.setattr(switcher, "get_igpu_vendor", lambda: "intel")
+    monkeypatch.setattr(switcher, "get_display_manager", lambda: None)
+    monkeypatch.setattr(switcher.system, "get_nvidia_gpu_pci_bus", lambda: "PCI:1:0:0")
+    monkeypatch.setattr(switcher, "create_file", lambda *args, **kwargs: False)
+
+    assert switcher.graphics_mode_switcher(
+        "nvidia", None, False, None, None, False
+    ) is False
+    assert called == {"rebuild": False, "save": False}
 
 
 def test_hybrid_switch_with_rtd3_zero_disables_power_rules(monkeypatch) -> None:

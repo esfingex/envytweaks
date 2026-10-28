@@ -1,7 +1,9 @@
 """Tests for CLI flag wiring that must not touch the real system."""
 
+import contextlib
 import sys
 
+import pytest
 from envytweaks import cli as cli_mod
 
 
@@ -62,3 +64,25 @@ def test_reset_dry_run_forwards_flags_and_restores_backups(monkeypatch) -> None:
         "clear_state": True,
         "cache": True,
     }
+
+
+class _DummyCachedConfig:
+    def __init__(self, _args) -> None:
+        pass
+
+    def adapter(self):
+        return contextlib.nullcontext()
+
+
+def test_switch_failure_exits_with_error(monkeypatch, caplog) -> None:
+    monkeypatch.setattr(cli_mod, "CachedConfig", _DummyCachedConfig)
+    monkeypatch.setattr(cli_mod, "graphics_mode_switcher", lambda *args, **kwargs: False)
+    monkeypatch.setattr(
+        sys, "argv", ["envytweaks", "--switch", "hybrid", "--dry-run"]
+    )
+
+    with pytest.raises(SystemExit) as exc:
+        cli_mod.main()
+
+    assert exc.value.code == 1
+    assert "switch aborted" in caplog.text

@@ -73,7 +73,7 @@ def test_switcher_uses_cached_bus(monkeypatch, tmp_path) -> None:
     monkeypatch.setattr(
         switcher,
         "create_file",
-        lambda target, content, **kwargs: written.__setitem__(target, content),
+        lambda target, content, **kwargs: written.__setitem__(target, content) or True,
     )
 
     cached = CachedConfig(SimpleNamespace(dry_run=False))

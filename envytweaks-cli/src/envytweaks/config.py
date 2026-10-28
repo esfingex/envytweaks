@@ -399,6 +399,12 @@ def restore_sddm_xsetup(dry_run: bool = False) -> bool:
 
 def reset_sddm_xsetup(dry_run: bool = False) -> None:
     """Restore the SDDM Xsetup backup, or write the default empty script."""
+    if not SDDM_XSETUP_PATH.parent.exists():
+        logging.warning(
+            "SDDM is not installed (%s missing); skipping Xsetup reset",
+            SDDM_XSETUP_PATH.parent,
+        )
+        return
     if restore_sddm_xsetup(dry_run=dry_run):
         return
     if SDDM_XSETUP_PATH.exists() and not is_generated_file(SDDM_XSETUP_PATH):

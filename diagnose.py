@@ -9,7 +9,6 @@ import sys
 from pathlib import Path
 
 
-
 # Helper functions for colored console output
 def color(text: str, code: str) -> str:
     if sys.stdout.isatty():
@@ -79,7 +78,7 @@ def find_nvidia_pci_id() -> str | None:
 
 def main() -> None:
     print_header("EnvyTweaks Diagnostic Utility")
-    print("This script verifies if the CLI, GNOME widget, and GPU offloading are working.")
+    print("This script verifies the CLI, desktop widgets, and GPU offloading.")
 
     # -------------------------------------------------------------------------
     # 1. CLI Validation
@@ -171,7 +170,7 @@ def main() -> None:
                 if suspended_ms > 0:
                     print(f"Historical Suspends: {green('Yes')} ({suspended_ms} ms suspended total)")
                 else:
-                    print(f"Historical Suspends: {yellow('No yet')} (0 ms suspended)")
+                    print(f"Historical Suspends: {yellow('Not yet')} (0 ms suspended)")
             except ValueError:
                 print(f"Historical Suspends: {yellow('Could not parse suspended time')}")
 
