@@ -130,7 +130,7 @@ PlasmoidItem {
 
     CustomDataSource {
         id: findNotificationToolDataSource
-        command: "find /usr -type f -executable \\( -name \"notify-send\" -o -name \"zenity\" \\)"
+        command: "command -v notify-send; command -v zenity"
     }
 
     CustomDataSource {
@@ -188,6 +188,12 @@ PlasmoidItem {
         target: envyControlSetModeDataSource
         function onExited(exitCode, exitStatus, stdout, stderr){
             root.loading = false
+
+            if(exitCode === 126){
+                showNotification(root.icons.error, i18n("Authorization was cancelled."))
+                root.desiredGPUMode = root.currentGPUMode
+                return
+            }
 
             if(exitCode === 127){
                 showNotification(root.icons.error, i18n("Root privileges are required."))

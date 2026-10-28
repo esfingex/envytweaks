@@ -10,14 +10,19 @@ export const GPU_PROFILE_NVIDIA = "nvidia";
 export const GPU_PROFILE_UNKNOWN = "unknown";
 export const GPU_PROFILE_NOT_INSTALLED = "not_installed";
 
+export function getEnvytweaksPath() {
+    return GLib.find_program_in_path("envytweaks");
+}
+
 export function getCurrentProfile() {
-    if (!GLib.find_program_in_path("envytweaks")) {
+    const envytweaksPath = getEnvytweaksPath();
+    if (!envytweaksPath) {
         return GPU_PROFILE_NOT_INSTALLED;
     }
 
     try {
         let proc = new Gio.Subprocess({
-            argv: ['envytweaks', '--query'],
+            argv: [envytweaksPath, '--query'],
             flags: Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_SILENCE,
         });
         proc.init(null);
@@ -75,9 +80,19 @@ export function requestReboot() {
 }
 
 function _execSwitch(profile, args, onComplete) {
+    const envytweaksPath = getEnvytweaksPath();
+    const pkexecPath = GLib.find_program_in_path("pkexec");
+
+    if (!envytweaksPath || !pkexecPath) {
+        if (typeof onComplete === 'function') {
+            onComplete(127);
+        }
+        return;
+    }
+
     try {
         let proc = Gio.Subprocess.new(
-            ['pkexec', '/usr/bin/envytweaks', '-s', profile, ...args],
+            [pkexecPath, envytweaksPath, '-s', profile, ...args],
             Gio.SubprocessFlags.NONE
         );
 

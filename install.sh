@@ -12,12 +12,27 @@ echo "Installing envytweaks-cli system-wide..."
 if [ "$EUID" -ne 0 ]; then
     echo "CLI installation requires sudo. Asking for password..."
     sudo pip install --upgrade --break-system-packages ./envytweaks-cli
-    sudo cp ./envytweaks-cli/com.envytweaks.policy /usr/share/polkit-1/actions/
 else
     pip install --upgrade --break-system-packages ./envytweaks-cli
-    cp ./envytweaks-cli/com.envytweaks.policy /usr/share/polkit-1/actions/
 fi
-echo "[+] Polkit policy installed to /usr/share/polkit-1/actions/com.envytweaks.policy"
+
+# Point the polkit action at the binary that was actually installed. pip uses
+# /usr/local/bin on Debian/Ubuntu and /usr/bin on Arch, so hardcoding one path
+# breaks the other.
+ENVYTWEAKS_BIN="$(command -v envytweaks || true)"
+if [ -z "$ENVYTWEAKS_BIN" ]; then
+    ENVYTWEAKS_BIN="/usr/bin/envytweaks"
+fi
+POLICY_TMP="$(mktemp)"
+sed "s|/usr/bin/envytweaks|$ENVYTWEAKS_BIN|" \
+    ./envytweaks-cli/com.envytweaks.policy > "$POLICY_TMP"
+if [ "$EUID" -ne 0 ]; then
+    sudo cp "$POLICY_TMP" /usr/share/polkit-1/actions/com.envytweaks.policy
+else
+    cp "$POLICY_TMP" /usr/share/polkit-1/actions/com.envytweaks.policy
+fi
+rm -f "$POLICY_TMP"
+echo "[+] Polkit policy installed to /usr/share/polkit-1/actions/com.envytweaks.policy (exec: $ENVYTWEAKS_BIN)"
 
 # Helper for non-root commands if run under sudo
 run_as_real_user() {

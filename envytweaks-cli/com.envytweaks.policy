@@ -5,7 +5,7 @@
 <policyconfig>
 
   <vendor>CachyOS EnvyTweaks</vendor>
-  <vendor_url>https://github.com/cachyos/envytweaks</vendor_url>
+  <vendor_url>https://github.com/esfingex/envytweaks</vendor_url>
 
   <action id="com.envytweaks.switch">
     <description>Switch GPU Mode and Rebuild Initramfs</description>

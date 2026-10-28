@@ -7,7 +7,7 @@
 
 ## Architecture Map (Mental Model)
 - `envytweaks-cli/` → Núcleo Python 3.10+ PEP 517 para cambio de modos GPU, udev rules, modprobe y RTD3.
-- `envytweaks-gnome/` → Extensión de GNOME Shell 43-50+ para integración en Quick Settings.
+- `envytweaks-gnome/` → Extensión de GNOME Shell 45-50+ para integración en Quick Settings.
 - `envytweaks-kde/` → Widget Plasmoid para KDE Plasma 6.
 - `diagnose.py` → Script de auditoría de hardware y estado del sistema.
 

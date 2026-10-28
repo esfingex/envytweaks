@@ -8,7 +8,7 @@
 
 ## Architecture Map (Mental Model)
 - `envytweaks-cli/` → Núcleo Python 3.10+ PEP 517 para cambio de modos GPU, udev rules, modprobe y RTD3.
-- `envytweaks-gnome/` → Extensión de GNOME Shell 43-50+ para integración en Quick Settings.
+- `envytweaks-gnome/` → Extensión de GNOME Shell 45-50+ para integración en Quick Settings.
 - `envytweaks-kde/` → Widget Plasmoid para KDE Plasma 6.
 - `diagnose.py` → Script de auditoría de hardware y estado del sistema.
 
@@ -31,7 +31,7 @@
 
 Ofrece tres capas de interacción principal:
 1. **`envytweaks-cli`**: Herramienta de línea de comandos en Python 3.10+ (PEP 517) derivada de EnvyControl con sintaxis estricta, caché rápido y gestión de energía RTD3.
-2. **`envytweaks-gnome`**: Extensión de GNOME Shell (soporta GNOME 43 a 50+) integrada en Quick Settings y la barra superior.
+2. **`envytweaks-gnome`**: Extensión de GNOME Shell (soporta GNOME 45 a 50+) integrada en Quick Settings y la barra superior.
 3. **`envytweaks-kde`**: Widget nativo para la bandeja del sistema en **KDE Plasma 6**.
 
 ---
@@ -344,7 +344,7 @@ Status: Pending
 Objective: Create the base GNOME extension with updated metadata.
 
 Tasks:
-- `[ ]` Write metadata.json with new UUID and GNOME 43-50 shell-version support.
+- `[ ]` Write metadata.json with new UUID and GNOME 45-50 shell-version support.
 - `[ ]` Write GSettings schema (gschema.xml) with all keys including rtd3-mode (integer).
 - `[ ]` Compile schema: glib-compile-schemas schemas/.
 - `[ ]` Write extension.js entry point (same QuickSettings/TopBar logic as original).
@@ -493,7 +493,7 @@ Both original projects are abandoned. envytweaks unifies them under active maint
 
 Components:
 1. envytweaks-cli/ — Python 3.10+, pathlib.Path, match/case, pyproject.toml, src layout
-2. envytweaks-gnome/ — GJS/ESM extension, GNOME 43-50, fixes pkexec exit codes, adds RTD3 mode setting
+2. envytweaks-gnome/ — GJS/ESM extension, GNOME 45-50, fixes pkexec exit codes, adds RTD3 mode setting
 
 Key decisions (see STATE.md ADRs):
 - Python 3.10+ minimum (match/case required)

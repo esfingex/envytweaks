@@ -41,3 +41,28 @@ jobs:
         run: |
           cd envytweaks-cli
           pip install --dry-run .
+
+  packaging-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install packaging tools
+        run: sudo apt-get update && sudo apt-get install -y gettext
+
+      - name: Validate JSON metadata
+        run: |
+          jq empty envytweaks-gnome/metadata.json
+          jq empty envytweaks-kde/metadata.json
+
+      - name: Check GNOME JavaScript syntax
+        run: |
+          for file in envytweaks-gnome/*.js envytweaks-gnome/lib/*.js envytweaks-gnome/ui/*.js; do
+            node --input-type=module --check < "$file"
+          done
+
+      - name: Check translations
+        run: |
+          msgfmt --check -o /dev/null po/es.po
+          msgfmt --check -o /dev/null envytweaks-kde/contents/locale/es/es.po

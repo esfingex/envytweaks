@@ -1,7 +1,7 @@
 # EnvyTweaks
 
 [![Get it on GNOME Extensions](https://img.shields.io/badge/Get%20it%20on-GNOME%20Extensions-4a86e8?style=for-the-badge&logo=gnome&logoColor=white)](https://extensions.gnome.org/extension/10456/envytweaks-gpu-switcher/)
-[![GNOME Shell 43-50+](https://img.shields.io/badge/GNOME%20Shell-43--50%2B-blue?style=for-the-badge&logo=gnome&logoColor=white)](https://extensions.gnome.org/extension/10456/envytweaks-gpu-switcher/)
+[![GNOME Shell 45-50+](https://img.shields.io/badge/GNOME%20Shell-45--50%2B-blue?style=for-the-badge&logo=gnome&logoColor=white)](https://extensions.gnome.org/extension/10456/envytweaks-gpu-switcher/)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![Platform: Linux](https://img.shields.io/badge/Platform-Linux%20%2F%20CachyOS-FCC624?style=for-the-badge&logo=linux&logoColor=black)](https://cachyos.org)
 [![Static Analysis: Shexli Clean](https://img.shields.io/badge/Shexli-Clean%200%20Errors-brightgreen?style=for-the-badge)](https://gjs.guide)
@@ -10,7 +10,7 @@
 EnvyTweaks is a modernized GPU mode switching suite for NVIDIA Optimus laptops on Linux. It includes:
 
 1. **[envytweaks-cli](envytweaks-cli)**: A modernized, PEP 517-compliant CLI utility ported from EnvyControl, featuring modern Python syntax, strict static typing, and robust caching.
-2. **[envytweaks-gnome](envytweaks-gnome)**: A modernized GNOME Shell extension (supporting GNOME 43 to 50) ported from GPU Profile Selector, featuring full Quick Settings and Top Bar integration, dynamic RTD3 settings, and graceful fallback when the CLI tool is not installed.
+2. **[envytweaks-gnome](envytweaks-gnome)**: A modernized GNOME Shell extension (supporting GNOME 45 to 50) ported from GPU Profile Selector, featuring full Quick Settings and Top Bar integration, dynamic RTD3 settings, and graceful fallback when the CLI tool is not installed.
 3. **[envytweaks-kde](envytweaks-kde)**: A modernized KDE Plasma 6 widget ported from Optimus GPU Switcher, allowing seamless GPU switching directly from the system tray under KDE Plasma.
 
 

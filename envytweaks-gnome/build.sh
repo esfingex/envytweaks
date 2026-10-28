@@ -9,6 +9,14 @@ cd "$SCRIPT_DIR"
 # 1. Eliminar gschemas.compiled previo si existe
 rm -f schemas/gschemas.compiled
 
+# 1.1 Compilar traducciones desde po/ para que el .mo sea reproducible
+if command -v msgfmt >/dev/null 2>&1; then
+    msgfmt --check -o locale/es/LC_MESSAGES/envytweaks.mo ../po/es.po
+    echo "[+] Traducción es compilada desde po/es.po"
+else
+    echo "[!] msgfmt no encontrado; se usa el .mo existente"
+fi
+
 # 2. Empaquetar Extensión de GNOME Shell (.zip) limpia para extensions.gnome.org
 echo "[*] Creando paquete zip limpio para extensions.gnome.org..."
 rm -f envytweaks@cachyos.org.shell-extension.zip

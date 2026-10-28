@@ -6,7 +6,7 @@
 
 Ofrece tres capas de interacción principal:
 1. **`envytweaks-cli`**: Herramienta de línea de comandos en Python 3.10+ (PEP 517) derivada de EnvyControl con sintaxis estricta, caché rápido y gestión de energía RTD3.
-2. **`envytweaks-gnome`**: Extensión de GNOME Shell (soporta GNOME 43 a 50+) integrada en Quick Settings y la barra superior.
+2. **`envytweaks-gnome`**: Extensión de GNOME Shell (soporta GNOME 45 a 50+) integrada en Quick Settings y la barra superior.
 3. **`envytweaks-kde`**: Widget nativo para la bandeja del sistema en **KDE Plasma 6**.
 
 ---
